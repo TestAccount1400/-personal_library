@@ -4,7 +4,7 @@ import colorama
 class Book:
     media_type = 'Book'
 
-    def __init__(self, title, authors, publish_year, pages, language, price, total_read_pages=0, progress=0):
+    def __init__(self, title, authors, publish_year, pages, language, price, total_read_pages=0):
         """
 
         :param title: A string, title of book
@@ -24,74 +24,49 @@ class Book:
         self.authors = authors
         self.pages = pages
         self.total_read_pages = total_read_pages
-        self.progress = progress
-
-        """
-        study : Depending on type of media can be 'read' or 'listened' in output string of read method
-        page_minutes = Depending on type of media can be 'pages' or 'minutes' in output string of read method
-        status_1 = 'Reading'
-        status_2 = 'Unread'
-        """
-        self.study = 'read'
-        self.page_minutes = 'page'
-        self.status_1 = 'Reading'
-        self.status_2 = 'Unread'
-        self.status = 'Unread'
-        """
-        this conditional expression checks if user studied media before adding it to the library.
-         calls read method, if it is True.
-        """
-        if self.total_read_pages != 0:
-            self.read(self.total_read_pages)
+        self.progress = round((self.total_read_pages / self.pages) * 100)
 
     def read(self, read_pages):
         """
-        this method shows some Messages depending on the number(or time duration of child)
-         of pages read (or listened time of child) based on attribute 'study' and 'page_minutes'
+        this method shows some Messages depending on the number of pages read based on total_read_pages
         :param read_pages: number of pages is read now
         :return: total read pages
         """
         if self.pages < (self.total_read_pages + read_pages):
-            print("input is out of range...!")
+            read_message = "input is out of range...!"
 
         else:
             self.total_read_pages += read_pages
-
-            self.progress = round((self.total_read_pages / self.pages) * 100, 2)
-            print(f'{self.progress}% of {self.status_1} {self.title} is completed')
-
+            self.progress = round((self.total_read_pages / self.pages) * 100)
             if 0 <= self.total_read_pages < self.pages:
 
-                print(f'you have {self.study} {read_pages} more {self.page_minutes} from "{self.title}".'
-                      f' and {self.pages - self.total_read_pages} {self.page_minutes} left')
+                read_message = f'you have read {read_pages} more pages from "{self.title}".' \
+                          f' and {self.pages - self.total_read_pages} pages left'
             else:
-                print(f'congratulations! You have {self.study} 'f'all {self.total_read_pages}'
-                      f' {self.page_minutes} of "{self.title}" try a new one')
-
-        return self.total_read_pages
+                read_message = f'congratulations! You have read 'f'all {self.total_read_pages}' \
+                          f' pages of "{self.title}" try a new one'
+        return read_message
 
     def get_status(self):
         """
-         This method assignees a string to attribute 'status' based on total read pages
-        :return: status of studying media
+         This method assignees a string to attribute 'status' based on total_read_pages
+        :return: status of reading media
         """
 
         if 0 < self.total_read_pages < self.pages:
-            self.status = self.status_1
+            status = 'reading'
         elif self.total_read_pages == self.pages:
-            self.status = 'finished'
+            status = 'finished'
         else:
-            self.status = self.status_2
-
-        print(f'{self.status_1} status of "{self.title}":{self.status}')
-        return self.status
+            status = 'Unread'
+        return status
 
     def __str__(self):
 
         return f'title: {self.title} \nauthor(s): {self.authors} \n' \
                f'publish year: {self.publish_year} \nnumber of pages: {self.pages} \n' \
                f'language: {self.language} \nprice: {self.price}$\n' \
-               f'total read pages:{self.total_read_pages}\nreading status: {self.status}\n' \
+               f'total read pages:{self.total_read_pages}\nreading status: {self.get_status()}\n' \
                f'reading progress:{self.progress}%\n'
 
     @staticmethod
@@ -134,79 +109,71 @@ class Book:
         return text_media
 
 
-class Magazine(Book):
-    media_type = 'Magazine'
-
-    def __init__(self, title, authors, publish_year, pages, language, price, issue, total_read_pages=0):
-        """
-
-                :param title: A string, title of magazine
-        :param authors: A list of strings, authors of magazine
-        :param publish_year: int
-        :param pages: int, number of all magazine pages
-        :param language: string, the language of magazine
-        :param price: float, price of magazine in $
-        :param issue: float, version of Magazine
-        :param total_read_pages: int all pages that user read.
-            it is placed in __init__ so that user can enter media
-            when he/she is read some pages of media
-        """
-        super().__init__(title, authors, publish_year, pages, language, price)
-        self.issue = issue
-        self.total_read_pages = total_read_pages
-
-        if self.total_read_pages != 0:
-            self.read(self.total_read_pages)
-
-    def __str__(self):
-        return f'title: {self.title} \nauthor(s): {self.authors} \n' \
-               f'publish year: {self.publish_year} \nnumber of pages: {self.pages} \n' \
-               f'language: {self.language} \nprice: {self.price}$\nissue: {self.issue}' \
-               f'total read pages:{self.total_read_pages}\nreading status: {self.status}\n' \
-               f'reading progress:{self.progress}%\n'
-
-
-class Podcast(Book):
+class Podcast:
     media_type = 'Podcast'
 
-    def __init__(self, title, speakers, publish_year, time, language,
-                 price, total_listened_time=0):
-        super().__init__(title, speakers, publish_year, time, language, price)
+    def __init__(self, title, speakers, publish_year, time, audio_language, price, total_listened_time=0):
 
         """
 
         :param title: string, Title of Podcast episode
-        :param speaker: list of speaker(s) in podcast
+        :param speakers: list of speaker(s) in podcast
         :param publish_year: int, Publish year of podcast
         :param time: float, Duration of podcast file
-        :param language: string, Language of podcast speaker
+        :param audio_language: string, Language of podcast speaker
         :param price: float, Price of podcast in $
         """
+        self.title = title
         self.speakers = speakers
+        self.publish_year = publish_year
         self.time = time
-        self.study = 'listened'
-        self.page_minutes = 'minutes'
-        self.status_1 = 'listening'
-        self.status_2 = 'Untouched'
+        self.audio_language = audio_language
+        self.price = price
         self.total_listened_time = total_listened_time
-        self.status = 'Untouched'
-
-        if self.total_listened_time != 0:
-            self.read(self.total_listened_time)
+        self.progress = round((self.total_listened_time / self.time) * 100)
 
     def listen(self, listened_time):
         """
-        this method is read method of parent class with different name
+        this method shows some Messages depending on the time duration listened based on total_listened_time
         :param listened_time: time duration is listened now
-        :return:
+        :return: total listened time
         """
-        self.total_listened_time = super().read(listened_time)
+        if self.time < (self.total_listened_time + listened_time):
+            listen_message = "input is out of range...!"
+
+        else:
+            self.total_listened_time += listened_time
+
+            self.progress = round((self.total_listened_time / self.time) * 100)
+
+            if 0 <= self.total_listened_time < self.time:
+
+                listen_message = f'you have listened {listened_time} more minutes from "{self.title}".' \
+                          f' and {self.time - self.total_listened_time} minutes left'
+            else:
+                listen_message = f'congratulations! You have listened all {self.total_listened_time}' \
+                          f' minutes of "{self.title}" try a new one'
+        return listen_message
+
+    def get_status(self):
+        """
+         This method assigns a string to attribute 'status' based on total_listened_time
+        :return: status of listening media
+        """
+
+        if 0 < self.total_listened_time < self.time:
+            status = 'listening'
+        elif self.total_listened_time == self.time:
+            status = 'finished'
+        else:
+            status = 'Untouched'
+        return status
 
     def __str__(self):
         return f'title: {self.title}\nspeaker(s): {self.speakers} \n' \
                f'publish year: {self.publish_year} \nfile duration: {self.time} minutes \n' \
-               f'language: {self.language} \nprice: {self.price}$ \n' \
-               f'total listened time:{self.total_listened_time}\nstatus: {self.status}\n' \
+               f'language: {self.audio_language} \nprice: {self.price}$ \n' \
+               f'total listened time:{self.total_listened_time}\nstatus: {self.get_status()}\n' \
                f'listening progress: {self.progress}%\n'
 
     @staticmethod
@@ -243,19 +210,50 @@ class Podcast(Book):
             audio = Podcast(title, speakers, publish_year, time, audio_language, price, total_listened_time)
         elif media_type == 'Audiobook':
             authors = input(f'author(s) of {media_type}:').split(',')
-            pages = input(f'pages of {media_type}:')
+            pages = int(input(f'pages of {media_type}:'))
             book_language = input(f'book language of {media_type}:')
-            audio = AudioBook(title, speakers, authors, publish_year, pages, time, book_language, audio_language, price,
+            audio = AudioBook(title, speakers, authors, publish_year, time, pages, book_language, audio_language, price,
                               total_listened_time)
+            audio.listen(total_listened_time)
         return audio
 
 
-class AudioBook(Podcast):
+class Magazine(Book):
+    media_type = 'Magazine'
+
+    def __init__(self, title, authors, publish_year, pages, language, price, issue, total_read_pages=0):
+        """
+
+                :param title: A string, title of magazine
+        :param authors: A list of strings, authors of magazine
+        :param publish_year: int
+        :param pages: int, number of all magazine pages
+        :param language: string, the language of magazine
+        :param price: float, price of magazine in $
+        :param issue: float, version of Magazine
+        :param total_read_pages: int all pages that user read.
+            it is placed in __init__ so that user can enter media
+            when he/she is read some pages of media
+        """
+        super().__init__(title, authors, publish_year, pages, language, price)
+        self.issue = issue
+        self.total_read_pages = total_read_pages
+        self.progress = round((self.total_read_pages / self.pages) * 100)
+
+    def __str__(self):
+        return f'title: {self.title} \nauthor(s): {self.authors} \n' \
+               f'publish year: {self.publish_year} \nnumber of pages: {self.pages} \n' \
+               f'language: {self.language} \nprice: {self.price}$\nissue: {self.issue}' \
+               f'total read pages:{self.total_read_pages}\nreading status: {self.get_status()}\n' \
+               f'reading progress:{self.progress}%\n'
+
+
+class AudioBook(Podcast, Book):
     media_type = 'Audiobook'
     """
     """
 
-    def __init__(self, title, speakers, authors, publish_year, pages, time,
+    def __init__(self, title, speakers, authors, publish_year, time, pages,
                  book_language, audio_language, price, total_listened_time=0):
         """
 
@@ -271,40 +269,37 @@ class AudioBook(Podcast):
         :param total_listened_time: total listened time from audio file
         """
         Podcast.__init__(self, title, speakers, publish_year, time, audio_language, price)
-        self.authors = authors
-        self.pages = pages
-        self.total_listened_time = total_listened_time
-        self.audio_language = audio_language
+        Book.__init__(self, title, authors, publish_year, pages, book_language, price)
         self.book_language = book_language
-
-        if self.total_listened_time != 0:
-            self.read(self.total_listened_time)
+        self.total_listened_time = total_listened_time
+        self.progress = round((self.total_listened_time / self.time) * 100)
 
     def __str__(self):
         return f'\ntitle: {self.title}\nspeaker(s): {self.speakers}\n' \
                f'author(s): {self.authors}\npublish year: {self.publish_year}\n' \
                f'number of pages: {self.pages}\naudio_duration: {self.time}' \
                f'\nlanguage of book: {self.book_language}' \
-               f'\nlanguage of audio: {self.audio_language}\nprice: {self.price}\nstatus: {self.status}\n' \
+               f'\nlanguage of audio: {self.audio_language}\nprice: {self.price}\nstatus: {self.get_status()}\n' \
                f'listening progress: {self.progress}%\n'
 
 
 def get_info():
     """
-        This function, depending on the media type, takes information of a media from user until 'Quit' is entered,
+        This function, depending on the media type, takes information of a media from user until 5 is entered,
         then appends it to related media type in main library
     :return: None
     """
-
+    media_types = {'1': 'Book', '2': 'Magazine', '3': 'Podcast', '4': 'Audiobook', '5': 'quit'}
     while True:
-        media_type = input('Enter media type or Quit:').capitalize()
-        if media_type not in library.keys() and media_type != 'Quit':
+        media_type = input('1.Book, 2.Magazine, 3.Podcast, 4.Audiobook or 5.Quit:').capitalize()
+        if media_type not in media_types.keys():
             print(colorama.Fore.RED, 'ERROR: Invalid media type...!', colorama.Fore.RESET)
 
-        elif media_type in library.keys():
-            for _ in library[media_type]:
-                if _.media_type == media_type:
-                    library[media_type].append(_.get_info(media_type, library[media_type]))
+        elif media_type in media_types.keys() and media_type != '5':
+            for _ in library[media_types[media_type]]:
+                if _.media_type == media_types[media_type]:
+                    library[media_types[media_type]].append(_.get_info(media_types[media_type],
+                                                                       library[media_types[media_type]]))
                     sorting(library)
                     break
         else:
@@ -397,6 +392,17 @@ def clear_it(shelf_or_lib):
         print(colorama.Fore.LIGHTRED_EX, 'Deleting action has been aborted...', colorama.Fore.RESET)
 
 
+def study(media):
+    massage = ''
+    if media.media_type in ['Book', 'Magazine']:
+        pages = int(input('Enter number of pages you read: '))
+        massage = media.read(pages)
+    elif media.media_type in ['Podcast', 'Audiobook']:
+        time = float(input('Enter time duration you listened: '))
+        massage = media.listen(time)
+    return massage
+
+
 def media_menu(chosen_shelf):
     """
     This function is for choosing methods of objects
@@ -406,33 +412,34 @@ def media_menu(chosen_shelf):
     :return:
     """
     shelf_medias_title = [x.title for x in library[chosen_shelf]]
-    print(shelf_medias_title)
+    for i in range(len(shelf_medias_title)):
+        print(colorama.Fore.CYAN, i + 1, '.', shelf_medias_title[i], colorama.Fore.RESET)
 
     """
 
     """
     while True:
-        media_title = input(f'Enter the title of your considering {chosen_shelf} (case sensitive): ')
+        media_title = shelf_medias_title[int(input(f'Enter the title of your considering {chosen_shelf}: ')) - 1]
         if media_title not in shelf_medias_title:
-            print(f'ERROR: "{media_title}" is not in {chosen_shelf} shelf..')
+            print(f'ERROR: please enter a number from 1 - {len(shelf_medias_title) + 1}..')
         else:
             break
 
     while True:
-        print(colorama.Fore.LIGHTMAGENTA_EX, '\na. back to shelf menu'
-                                             f'\nb. Study "{media_title}"'
-                                             f'\nc. check status of "{media_title}"'
-                                             f'\n d. remove "{media_title}" from shelf'
-                                             f'\n e. show the "{media_title}"'
-                                             f'\n f. chek progress of "{media_title}"', colorama.Fore.RESET)
+        print(colorama.Fore.LIGHTMAGENTA_EX, f'\n1. Study "{media_title}"'
+                                             f'\n2. check status of "{media_title}"'
+                                             f'\n3. remove "{media_title}" from shelf'
+                                             f'\n4. show the "{media_title}"'
+                                             f'\n5. chek progress of "{media_title}"'
+                                             f'\n6. back to shelf menu', colorama.Fore.RESET)
 
         while True:
             act = input('Take an action to continue: ')
-            if act not in media_method_dict.keys() and act != 'a':
-                print(colorama.Fore.RED, 'invalid order... just a - f are valid', colorama.Fore.RESET)
+            if act not in media_method_dict.keys() and act != '6':
+                print(colorama.Fore.RED, 'invalid order... just 1 - 6 are valid', colorama.Fore.RESET)
             else:
                 break
-        if act == 'a':
+        if act == '6':
             break
 
         else:
@@ -450,13 +457,13 @@ def shelf_menu(media_type):
     while True:
         print('\n1. Back to library menu'
               f'\n2. choose a {media_type}'
-              '\n3. Sort selected shelf'
+              f'\n3. Sort {media_type} shelf'
               '\n4. Show the shelf'
-              '\n5. Clear the shelf')
+              f'\n5. Clear the {media_type} shelf')
 
         while True:
             select_shelf_act = input('Take an action to continue: ')
-            if (select_shelf_act not in shelf_menu_func_dict.keys()) and (select_shelf_act not in ['2', '1', '3']):
+            if (select_shelf_act not in shelf_menu_func_dict.keys()) and (select_shelf_act not in ['2', '1']):
                 print(colorama.Fore.RED, 'invalid order... just 1 - 5 are valid', colorama.Fore.RESET)
             else:
                 break
@@ -471,21 +478,21 @@ def shelf_menu(media_type):
 
 # .....................four dictionaries below are used to avoid too many nested "if"s and "else"s.....................
 main_menu_func_dict = {'2': lambda lib: sorting(lib),
-                       '5': lambda lib: show(lib),
-                       '6': lambda lib: clear_it(lib)}
+                       '3': lambda lib: show(lib),
+                       '4': lambda lib: clear_it(lib)}
 
 shelf_menu_func_dict = {'3': lambda lst_med: sorting(lst_med),
                         '4': lambda lst_med: show(lst_med),
-                        '5': lambda lst_med: clear_it(lst_med)}
+                        '5': lambda lst_med: clear_it(lst_med), }
 
-media_method_dict = {'b': lambda x: x.read(float(input('Enter number of pages or time'
-                                                       ' duration(minutes) of your study :'))),
-                     'c': lambda x: x.get_status(),
-                     'd': lambda x: print(f'{x.media_type} named {x.title} in library:'
-                                          f' {library[x.media_type].remove(x)}'),
-                     'e': lambda x: print(x),
-                     'f': lambda x: print(f'{x.progress}% of {x.title} reading/listening progress is completed...')}
+media_method_dict = {'1': lambda x: print(study(x)),
+                     '2': lambda x: print(f'status of {x.title} is {x.get_status()}'),
+                     '3': lambda x: library[x.media_type].remove(x) and print(f'{x.media_type}'
+                                                                              f' named {x.title} is removed'),
+                     '4': lambda x: print(x),
+                     '5': lambda x: print(f'{x.progress}% of {x.title} reading/listening progress is completed...')}
 
+media_types_choosing = {'1': 'Book', '2': 'Magazine', '3': 'Podcast', '4': 'Audiobook'}
 
 # Default medias in library for testing the cod
 
@@ -503,44 +510,39 @@ print('-' * 100)
 # menu code
 action = ''
 while action != 'Quit':
-    """
-    this is the main loop, library functions switching
-    """
-    print(colorama.Fore.MAGENTA, '*&' * 35, 'Hello Meimanat. Welcome to your library'.upper(),
+
+    print(colorama.Fore.MAGENTA, '*&' * 35, 'Hello user. Welcome to your library'.upper(),
           '$*' * 35, colorama.Fore.RESET)
     print(colorama.Fore.LIGHTBLUE_EX,
           '\n1. Add media to the library'
-          '\n2.Sort the library'
-          '\n3. Quit'
-          '\n4. Go to shelf menu'
-          '\n5. Show the library'
-          '\n6.Clear the library',
-          colorama.Fore.RESET)
-    print(colorama.Fore.GREEN, 'please take an action  ', colorama.Fore.RESET)
+          '\n2. Sort the library'
+          '\n3. Show the library'
+          '\n4. Clear the library',
+          '\n5. choose a media shelf and study from it',
+          '\n6. Quit', colorama.Fore.RESET)
+
+    print(colorama.Fore.GREEN, 'please take an action 1 to 4 to modify the main library'
+                               ' \n or enter 5 to go to a specific shelf: ', colorama.Fore.RESET)
     while True:
         action = input('action:').capitalize()
-        if (action not in main_menu_func_dict.keys()) and (action not in ['1', '3', '4']):
+        if (action not in main_menu_func_dict.keys()) and (action not in ['1', '5', '6']):
             print(colorama.Fore.RED, 'invalid order... just 1 - 6 are valid', colorama.Fore.RESET)
         else:
             break
     if action == '1':
         get_info()
 
-    elif action == '4':
-
+    elif action == '5':
         while True:
-            """
-            shelf choosing loop
-            """
             media_typ = input(f'{colorama.Fore.LIGHTMAGENTA_EX}Choose a shelf to continue:'
-                              f'Book/ Magazine/ Podcast/Audiobook{colorama.Fore.RESET} ').capitalize()
-            if media_typ not in library.keys():
-                print(f'ERROR: No "{media_typ}" in library shelves...!')
+                              f'1.Book/ 2.Magazine/ 3.Podcast/4.Audiobook{colorama.Fore.RESET} ').capitalize()
+            if media_typ not in media_types_choosing.keys():
+                print(f'ERROR:please enter 1 t0 4 to choose a media shelf')
             else:
                 break
-        shelf_menu(media_typ)
+        shelf_menu(media_types_choosing[media_typ])
 
-    elif action == '3':
+    elif action == '6':
         action = 'Quit'
     else:
         main_menu_func_dict[action](library)
