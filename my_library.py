@@ -1,11 +1,4 @@
-"""
-.........................................colorama FOR COLORING THE OUTPUT..............................................
-"""
 import colorama
-
-"""
-..................................................CLASSES..............................................................
-"""
 
 
 class Book:
@@ -296,11 +289,6 @@ class AudioBook(Podcast):
                f'listening progress: {self.progress}%\n'
 
 
-"""
-.......................................................METHODS..........................................................
-"""
-
-
 def get_info():
     """
         This function, depending on the media type, takes information of a media from user until 'Quit' is entered,
@@ -324,13 +312,17 @@ def get_info():
 
 
 def easy_print(list_to_print):
+    """
+    At first prints titles of table
+    then in a for loop prints wanted objects attributes
+    :param list_to_print: a list of objects to print in table form
+    :return: nothing, just print objects
+    """
     max_width = len(max(list_to_print, key=lambda x: len(x.__getattribute__('title'))).title)
     cyan_color = colorama.Fore.CYAN
     reset_color = colorama.Fore.RESET
     max_width += 6
-    """
-    print title of table
-    """
+
     print(' ' * 24 + ' ' * int(0.5 * (max_width - len('media type'))) + cyan_color + 'media_type'
           + ' ' * int(0.5 * ((max_width + 1 if max_width % 2 != 0 else 0) - len('media type'))) + '|'
           + ' ' * int(0.5 * ((max_width + 1 if max_width % 2 != 0 else 0) - len('title'))) + 'title'
@@ -340,10 +332,6 @@ def easy_print(list_to_print):
     print(' ' * 24, '-' * (3 * max_width))
 
     for _ in list_to_print:
-        """
-        print rows of table. Each media type, title, progress media in a column. if width of longest string is odd, 
-        adds 1 to length of it as base width of table column.
-        """
         odd = max_width
         if (max_width - len(str(_.media_type)) % 2) != 0:
             odd += 1
@@ -412,6 +400,8 @@ def clear_it(shelf_or_lib):
 def media_menu(chosen_shelf):
     """
     This function is for choosing methods of objects
+    first while loop: choose media(object) loop
+    second while loop: switch between methods that apply to a media
     :param chosen_shelf: name of shelf
     :return:
     """
@@ -419,7 +409,7 @@ def media_menu(chosen_shelf):
     print(shelf_medias_title)
 
     """
-    choose media(object) loop
+
     """
     while True:
         media_title = input(f'Enter the title of your considering {chosen_shelf} (case sensitive): ')
@@ -429,9 +419,6 @@ def media_menu(chosen_shelf):
             break
 
     while True:
-        """
-        switch between methods that apply to a media
-        """
         print(colorama.Fore.LIGHTMAGENTA_EX, '\na. back to shelf menu'
                                              f'\nb. Study "{media_title}"'
                                              f'\nc. check status of "{media_title}"'
@@ -455,10 +442,12 @@ def media_menu(chosen_shelf):
 
 
 def shelf_menu(media_type):
+    """
+    shelf actions switching (methods which applies to a selected media shelf)
+    :param media_type: can be book, podcast, magazine of audiobook
+    :return: nothing
+    """
     while True:
-        """
-        shelf actions switching
-        """
         print('\n1. Back to library menu'
               f'\n2. choose a {media_type}'
               '\n3. Sort selected shelf'
@@ -480,9 +469,7 @@ def shelf_menu(media_type):
             shelf_menu_func_dict[select_shelf_act](library[media_type])
 
 
-"""
-......................four dictionaries below are used to avoid too many nested "if"s and "else"s......................
-"""
+# .....................four dictionaries below are used to avoid too many nested "if"s and "else"s.....................
 main_menu_func_dict = {'2': lambda lib: sorting(lib),
                        '5': lambda lib: show(lib),
                        '6': lambda lib: clear_it(lib)}
@@ -499,9 +486,8 @@ media_method_dict = {'b': lambda x: x.read(float(input('Enter number of pages or
                      'e': lambda x: print(x),
                      'f': lambda x: print(f'{x.progress}% of {x.title} reading/listening progress is completed...')}
 
-"""
-Default medias in library for testing the cod
-"""
+
+# Default medias in library for testing the cod
 
 podcast1 = Podcast('Ravaaq', 'Farzin Ranjbar', 2020, 50, 'persian', 0, 10)
 book1 = Book('No Friend But The Mountains', 'Behrouz Boochani', 2018, 374, 'English', 10, 12)
@@ -510,18 +496,11 @@ magazine = Magazine('Bukhara', '[Ali Dehbashi,Darioush Ashoori]', 2020, 768, 'Pe
 audio_book = AudioBook('The Black Swan', 'Ali Bandari', 'Nassim Nicholas Taleb', 2020, 400, 62,
                        'English', 'Persian', 0, 10)
 
-"""
-main library
-"""
+# main library
 library = {'Book': [book1, book2], 'Magazine': [magazine], 'Podcast': [podcast1], 'Audiobook': [audio_book]}
 print('-' * 100)
 
-# lib_sorted_all = sorting(library)
-podcast1.get_status()
-"""
-.............................................USER APPLICATION CODES....................................................
-"""
-
+# menu code
 action = ''
 while action != 'Quit':
     """
